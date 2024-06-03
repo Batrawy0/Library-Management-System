@@ -110,13 +110,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ResponseEntity<BookResponse> getBookById(Long id) {
+    public ResponseEntity<?> getBookById(Long id) {
         try {
             if (idExist(id)) {
                 Book book = getBook(id);
                 return ResponseEntity.status(HttpStatus.OK).body(getBookResponse(book));
             } else {
-                throw new RuntimeException("Something went wrong");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Book doesn't exist");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

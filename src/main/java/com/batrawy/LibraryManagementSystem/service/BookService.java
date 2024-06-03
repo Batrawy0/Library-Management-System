@@ -16,7 +16,7 @@ public interface BookService {
 
     public ResponseEntity<List<BookResponse>> getAllBooks();
 
-    public ResponseEntity<BookResponse> getBookById(Long id);
+    public ResponseEntity<?> getBookById(Long id);
 
 
 }
