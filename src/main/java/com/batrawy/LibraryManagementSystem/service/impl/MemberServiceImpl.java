@@ -125,13 +125,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public ResponseEntity<MemberResponse> getMemberById(Long id) {
+    public ResponseEntity<?> getMemberById(Long id) {
         try {
             if (idExist(id)) {
                 Member member = getMember(id);
                 return ResponseEntity.status(HttpStatus.OK).body(getMemberResponse(member));
             } else {
-                throw new RuntimeException("Member doesn't exist");
+                return ResponseEntity.status(HttpStatus.OK).body("Member doesn't exist");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

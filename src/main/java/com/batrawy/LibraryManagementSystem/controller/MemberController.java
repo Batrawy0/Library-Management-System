@@ -41,7 +41,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponse> getBookById(@PathVariable Long id){
+    public ResponseEntity<?> getBookById(@PathVariable Long id){
         return memberService.getMemberById(id);
     }
 }
