@@ -11,5 +11,5 @@ public interface MemberService {
     public ResponseEntity<String> deleteMember(Long id);
     public ResponseEntity<String> updateMember(Long id, MemberRequest memberRequest);
     public ResponseEntity<List<MemberResponse>> getAllMembers();
-    public ResponseEntity<MemberResponse> getMemberById(Long id);
+    public ResponseEntity<?> getMemberById(Long id);
 }
