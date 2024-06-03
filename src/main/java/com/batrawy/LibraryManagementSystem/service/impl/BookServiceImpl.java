@@ -101,12 +101,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookResponse> getAllBooks() {
+    public ResponseEntity<List<BookResponse>> getAllBooks() {
         List<BookResponse> bookResponses = new ArrayList<>();
         bookRepository.findAll().forEach(book -> {
             bookResponses.add(getBookResponse(book));
         });
-        return bookResponses;
+        return ResponseEntity.status(HttpStatus.OK).body(bookResponses);
     }
 
     @Override
