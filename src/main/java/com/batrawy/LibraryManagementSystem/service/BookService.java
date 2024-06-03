@@ -14,7 +14,7 @@ public interface BookService {
 
     public ResponseEntity<String> updateBook(Long id, BookRequest bookRequest);
 
-    public List<BookResponse> getAllBooks();
+    public ResponseEntity<List<BookResponse>> getAllBooks();
 
     public ResponseEntity<BookResponse> getBookById(Long id);
 
