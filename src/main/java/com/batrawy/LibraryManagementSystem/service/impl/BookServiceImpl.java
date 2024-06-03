@@ -5,6 +5,8 @@ import com.batrawy.LibraryManagementSystem.model.dto.BookResponse;
 import com.batrawy.LibraryManagementSystem.model.entity.Book;
 import com.batrawy.LibraryManagementSystem.repository.BookRepository;
 import com.batrawy.LibraryManagementSystem.service.BookService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,21 +17,24 @@ import java.util.List;
 @Service
 public class BookServiceImpl implements BookService {
 
+    private final ModelMapper modelMapper;
     BookRepository bookRepository;
 
-    public BookServiceImpl(BookRepository bookRepository) {
+    @Autowired
+    public BookServiceImpl(BookRepository bookRepository, ModelMapper modelMapper) {
         this.bookRepository = bookRepository;
+        this.modelMapper = modelMapper;
     }
 
 
     @Override
     public ResponseEntity<String> addBook(BookRequest bookRequest) {
         try {
-            if(isValidBook(bookRequest)){
+            if (isValidBook(bookRequest)) {
                 Book book = createNewBook(bookRequest);
                 bookRepository.save(book);
                 return ResponseEntity.status(HttpStatus.OK).body("Book Added Successfully");
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
             }
         } catch (Exception e) {
@@ -38,7 +43,8 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book createNewBook(BookRequest bookRequest) {
-        return new Book(bookRequest.getTitle(), bookRequest.getAuthor(), bookRequest.getIsbn());
+        return modelMapper.map(bookRequest, Book.class);
+//        return new Book(bookRequest.getTitle(), bookRequest.getAuthor(), bookRequest.getIsbn());
     }
 
     private boolean isValidBook(BookRequest bookRequest) {
@@ -48,10 +54,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public ResponseEntity<String> deleteBook(Long id) {
         try {
-            if(idExist(id)){
+            if (idExist(id)) {
                 bookRepository.deleteById(id);
                 return ResponseEntity.status(HttpStatus.OK).body("Book deleted Successfully");
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
             }
         } catch (Exception e) {
@@ -66,16 +72,16 @@ public class BookServiceImpl implements BookService {
     @Override
     public ResponseEntity<String> updateBook(Long id, BookRequest bookRequest) {
         try {
-            if(idExist(id)){
-                if(isValidBook(bookRequest)){
+            if (idExist(id)) {
+                if (isValidBook(bookRequest)) {
 
                     Book book = getBook(id);
                     bookRepository.save(updateBookDetails(book, bookRequest));
                     return ResponseEntity.status(HttpStatus.OK).body("Book Updated Successfully");
-                }else{
+                } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
                 }
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
             }
         } catch (Exception e) {
@@ -91,27 +97,37 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book getBook(Long id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Book not found"));
-        return book;
+        return bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Book not found"));
     }
 
     @Override
     public List<BookResponse> getAllBooks() {
         List<BookResponse> bookResponses = new ArrayList<>();
-        bookRepository.findAll().forEach(book -> {bookResponses.add(new BookResponse(book.getTitle(), book.getAuthor(), book.getIsbn()));});
+        bookRepository.findAll().forEach(book -> {
+            bookResponses.add(getBookResponse(book));
+        });
         return bookResponses;
     }
 
     @Override
     public ResponseEntity<BookResponse> getBookById(Long id) {
         try {
-            if(idExist(id)){
+            if (idExist(id)) {
                 Book book = getBook(id);
-                return ResponseEntity.status(HttpStatus.OK).body(new BookResponse(book.getTitle(), book.getAuthor(), book.getIsbn()));
-            }else{
-                throw new RuntimeException("Something went wrong");            }
+                return ResponseEntity.status(HttpStatus.OK).body(getBookResponse(book));
+            } else {
+                throw new RuntimeException("Something went wrong");
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BookRequest getBookRequest(Book book) {
+        return modelMapper.map(book, BookRequest.class);
+    }
+
+    private BookResponse getBookResponse(Book book) {
+        return modelMapper.map(book, BookResponse.class);
     }
 }

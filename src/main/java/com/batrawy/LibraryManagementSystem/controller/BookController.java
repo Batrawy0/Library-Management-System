@@ -3,6 +3,7 @@ package com.batrawy.LibraryManagementSystem.controller;
 import com.batrawy.LibraryManagementSystem.model.dto.BookRequest;
 import com.batrawy.LibraryManagementSystem.model.dto.BookResponse;
 import com.batrawy.LibraryManagementSystem.service.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class BookController {
 
     BookService bookService;
 
+    @Autowired
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
